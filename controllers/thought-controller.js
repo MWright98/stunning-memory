@@ -1,4 +1,19 @@
-const {User, Thought} = require('../models');
+const User = require('../models/User');
+
+const [Thought, ThoughtSchema] = require('../models/Thought')
+
+const pushThoughts = (body, res)=>  {
+   
+      User.findOneAndUpdate(
+        { _id: body.userId },
+        { $push: { thoughts: { _id: res._id } } },
+        { new: true }
+      )
+        .then(dbUserData => res.json(dbUserData))
+        .catch(err => res.json(err))
+}
+
+
 
 const thoughtController = {
     //get all thoughts
@@ -22,6 +37,7 @@ const thoughtController = {
             path: 'reactions',
             select: '-__v'
         })
+        
         .select('-__v')
         .sort({ _id: -1 })
         .then(dbThoughtData => res.json(dbThoughtData))
@@ -30,10 +46,16 @@ const thoughtController = {
             res.sendStatus(400);
       });
     },
+    
+    
     createThought({body}, res) {
         Thought.create(body)
-            .then(dbThoughtData => res.json(dbThoughtData))
-            .catch(err => res.json(err))
+            // .then(pushThoughts())
+            .then(()=> setTimeout(dbThoughtData => res.json(dbThoughtData)), 100)
+            .then(pushThoughts(body, res))
+            .catch(err => res.json(err));
+            
+            
     },
     updateThought({params, body}, res) {
         Thought.findOneAndUpdate({_id: params.id}, body, {new: true, runValidators: true})
@@ -44,7 +66,9 @@ const thoughtController = {
                     return
                 }
                 res.json(dbThoughtData)
+                
             })
+            
             .catch(err => res.status(400).json(err));
     },
     deleteThought({params}, res) {

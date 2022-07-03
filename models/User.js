@@ -1,4 +1,5 @@
 const { Schema, model, Types } = require('mongoose');
+const {Thought, ThoughtSchema} = require('./Thought');
 
 var validateEmail = function(email) {
     var re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
@@ -21,6 +22,7 @@ const UserSchema = new Schema (
             validate: [validateEmail, 'Please fill a valid email address'],
             match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please fill a valid email address']
         },
+        thoughts: [{type: Schema.call(ThoughtSchema)}],
         friends: [{
             type: Schema.call(this)
           }]
