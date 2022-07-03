@@ -1,7 +1,10 @@
+//Import user model
 const User = require('../models/User');
 
+//Import thought model and schema 
 const [Thought, ThoughtSchema] = require('../models/Thought')
 
+//function to push thoughts to their associated user
 const pushThoughts = (body, res)=>  {
    
       User.findOneAndUpdate(
@@ -14,7 +17,7 @@ const pushThoughts = (body, res)=>  {
 }
 
 
-
+//Controller for thought routes
 const thoughtController = {
     //get all thoughts
     getAllThoughts(req, res) {
@@ -31,6 +34,7 @@ const thoughtController = {
             res.sendStatus(400);
       });
     },
+    //GET one thought by id
     getThoughtById({params}, res) {
         Thought.findOne({ _id: params.id })
         .populate({
@@ -46,17 +50,17 @@ const thoughtController = {
             res.sendStatus(400);
       });
     },
-    
-    
+    //Create a new thought    
     createThought({body}, res) {
         Thought.create(body)
-            // .then(pushThoughts())
+            
             .then(()=> setTimeout(dbThoughtData => res.json(dbThoughtData)), 100)
             .then(pushThoughts(body, res))
             .catch(err => res.json(err));
             
             
     },
+    //Update an existing thought
     updateThought({params, body}, res) {
         Thought.findOneAndUpdate({_id: params.id}, body, {new: true, runValidators: true})
             .then(dbThoughtData => {
@@ -71,11 +75,13 @@ const thoughtController = {
             
             .catch(err => res.status(400).json(err));
     },
+    //Delete an existing thought
     deleteThought({params}, res) {
         Thought.findOneAndDelete({_id: params.id})
             .then(dbThoughtData => res.json(dbThoughtData))
             .catch(err => res.json(err));
     },
+    //Add a reaction to an existing thought
     addReaction({ params, body }, res) {
         Thought.findOneAndUpdate(
           { _id: params.id },
@@ -103,4 +109,5 @@ const thoughtController = {
       },
 };
 
+//Export thought controller for use in router
 module.exports=thoughtController;

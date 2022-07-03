@@ -1,6 +1,8 @@
+//Mongoose and Date Format util import
 const { Schema, model, Types } = require('mongoose');
 const dateFormat = require('../utils/dateFormat');
 
+//Schema for reactions
 const ReactionSchema = new Schema(
     {
       // set custom id to avoid confusion with parent comment's _id field
@@ -31,6 +33,7 @@ const ReactionSchema = new Schema(
     }
   );
 
+//Schema for thoughts
   const ThoughtSchema = new Schema(
     {
       username: {
@@ -61,10 +64,13 @@ const ReactionSchema = new Schema(
     }
   );
 
+//Create virtual to track number of reactions to a thought
 ThoughtSchema.virtual('reactionCount').get(function() {
     return this.reactions.length;
 })
 
+//Create thought model using ThoughtSchema
 const Thought = model('Thought', ThoughtSchema);
 
+//Export Thought Model and Schema
 module.exports = [Thought, ThoughtSchema];
